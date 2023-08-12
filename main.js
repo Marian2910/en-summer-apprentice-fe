@@ -163,9 +163,7 @@ const formattedStartingHour = startingHour < 10 ? `0${startingHour}` : startingH
     const ticketTypeMarkup = `
   <div class="ticket-type-container">
     <h2 class="text-lg">Alege categoria:</h2>
-    <select id="ticketType" name="ticketType" class="ticketType">
-      ${categoriesOptions.join('\n')}
-    </select>
+    <select name="ticketType" class="ticket-type-container" id="${eventData.eventID}"> ${categoriesOptions.join('\n')} </select>
     <br>
   </div>
 `;
@@ -237,14 +235,13 @@ quantity.appendChild(quantityActions);
 actions.appendChild(quantity);
 eventDiv.appendChild(actions);
 
-// Create the event footer with "Add To Cart" button
 const eventFooter = document.createElement ('footer');
 const addToCart = document.createElement ('button') ;
 addToCart.classList.add(...addToCartBtnClasses);
 addToCart.innerText = 'Add To Cart';
 addToCart.disabled = true;
 addToCart.addEventListener('click', () => {
-  const selectedTicketCategoryId = document.getElementById('ticketType').value;
+  const selectedTicketCategoryId = document.getElementById(eventData.eventID).value;
   handleAddToCart(eventData.eventID, selectedTicketCategoryId, input, addToCart);
 
 });
@@ -258,7 +255,7 @@ return eventDiv;
   const handleAddToCart = (eventID, selectedTicketCategoryId, input, addToCart) => {
     const quantity = parseInt(input.value);
     const ticketCategory = parseInt(selectedTicketCategoryId);
-    const event = parseInt(eventID);
+    const event = parseInt(eventID);    
     
     if (parseInt(quantity)) {
       fetch('http://localhost:8080/orders/post', {
@@ -267,8 +264,8 @@ return eventDiv;
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          eventId: event,
-          ticketCategoryId: ticketCategory,
+          eventID: +event,
+          ticketCategoryId: +ticketCategory,
           numberOfTickets: +quantity,
         })
       })
