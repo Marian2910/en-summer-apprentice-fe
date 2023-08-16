@@ -1,5 +1,9 @@
 import { addPurchase } from "./utils";
 import { useStyle } from "./src/components/styles.js";
+import { removeLoader, addLoader } from "./src/components/loader";
+import { createEventElement } from "./src/components/createEvents";
+import { createOrderItem } from "./src/components/createOrder";
+
 
 
 function navigateTo(url) {
@@ -17,8 +21,25 @@ function getHomePageTemplate() {
 
 function getOrdersPageTemplate() {
   return `
-    <div id="content">
-    <h1 class="text-2xl mb-4 mt-8 text-center">Purchased Tickets</h1>
+    <div id="content" class="hidden">
+      <h1 class="text-lg mb-4 mt-8 text-center">Purchased Tickets</h1>
+      <div class="purchases ml-6 mr-6"> 
+        <div class="bg-white px-4 py-3 gap-x-4 flex font-bold">
+          <button class="flex flex-1 text-center justify-center" id="sorting-button-1"> 
+            <img width="20" height="20" src="https://img.icons8.com/windows/32/sort-alpha-up.png" alt="sort-alpha-up"/>  
+            <span>Name</span>
+          </button>
+          <span class="flex-1">Number of tickets</span>
+          <span class="flex-1">Category</span> 
+          <span class="flex-1  md:flex">Dates</span> 
+          <button class="flex felx -1 text-center justify-center" id="sorting-button-2">
+          <span>Price</span>
+          <img width="20" height="20" src="https://img.icons8.com/windows/32/sorting-arrows.png" alt="sorting-arrows"/>  
+          </button>
+          <span class="w-28 sm:w-8"></span>
+        </div>
+        <div id="purchases-content"></div>
+      </div>
     </div>
   `;
 }
@@ -60,7 +81,13 @@ function setupInitialPage() {
 function renderHomePage() {
   const mainContentDiv = document.querySelector('.main-content-component');
   mainContentDiv.innerHTML = getHomePageTemplate();
+  // setupFilterEvents();
+  // setupSearchEvents();
+  addLoader();
   fetchTicketEvents().then((data) => {
+    setTimeout(()=>{
+      removeLoader();
+    }, 200);
     addEvents(data);
   });
 }
@@ -79,6 +106,21 @@ async function fetchTicketEvents() {
   }
 }
 
+async function fetchOrders()
+{
+  try {
+    const response = await fetch('https://localhost:7163/api/Order/GetAllOrders');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return [];
+  }
+
+}
 const addEvents = (events) => {
   const eventsDiv = document.querySelector('.events');  
   eventsDiv.innerHTML = 'No events';
@@ -100,195 +142,41 @@ const addEvents = (events) => {
       console.error('Invalid eventData:', eventData.eventType);
       return null;
     }
-
     const eventElement = createEventElement(eventData);
     return eventElement;
   };
+  
 
-  const createEventElement = (eventData) => {
-    const ticketCategories = eventData.ticketCategories;
-    const eventDiv = document.createElement('div');
-    const eventWrapperClasses = useStyle('eventWrapper');
-    const actionsWrapperClasses = useStyle('actionsWrapper');
-    const quantityClasses = useStyle('quantity');
-    const inputClasses = useStyle('input');
-    const quantityActionsClasses = useStyle( 'quantityActions');
-    const increaseBtnClasses = useStyle('increaseBtn');
-    const decreaseBtnClasses = useStyle('decreaseBtn');
-    const addToCartBtnClasses = useStyle('addToCartBtn');
-
-    const startDate = new Date(eventData.startDate);
-    const endDate = new Date(eventData.endDate);
-
-const formattedStartDate = new Intl.DateTimeFormat('ro-RO', { month: 'long', day: 'numeric' }).format(startDate);
-const formattedEndDate = new Intl.DateTimeFormat('ro-RO', { month: 'long', day: 'numeric' }).format(endDate);
-
-let formattedDateRange;
-if (formattedStartDate === formattedEndDate) {
-  formattedDateRange = `${formattedStartDate}`;
-} else {
-  formattedDateRange = `${formattedStartDate} - ${formattedEndDate}`;
-}
-const startingHour = startDate.getHours();
-const formattedStartingHour = startingHour < 10 ? `0${startingHour}` : startingHour;
-
+  
+  
+  async function renderOrdersPage() {
+    const mainContentDiv = document.querySelector('.main-content-component');
+    mainContentDiv.innerHTML = getOrdersPageTemplate();
+    const purchasesDiv = document.querySelector('.purchases');
+    const purchasesContent = document.getElementById('purchases-content');
     
-    eventDiv.classList.add(...eventWrapperClasses);
-
-     const contentMarkup = `
-     <div class="centered-container">
-     <header>
-       <h2 class="event-title text-2xl font-bold">${eventData.eventName}</h2>
-     </header>
-     <div class="image">
-       <img src="./src/assets/${eventData.image}" alt="${eventData.eventName}" class="event-image rounded object-cover" width="150" height="150">
-     </div>
-     <div>
-      <p class="description">${eventData.eventDescription}</p>
-    </div>
-     <div class="content">
-      <p class="date-range">${formattedDateRange}, de la ${formattedStartingHour}:00</p>
-    </div>
-      `;
-    eventDiv.innerHTML = contentMarkup;
-
-    const actions = document.createElement('div');
-    actions.classList.add(...actionsWrapperClasses);
-
-    const categoriesOptions = ticketCategories.map(
-      (ticketCategory) =>
-      `<option value=${ticketCategory.ticketCategoryId}> ${ticketCategory.description} </option>`
-    );
-
-    const ticketTypeMarkup = `
-  <div class="ticket-type-container">
-    <h2 class="text-lg">Alege categoria:</h2>
-    <select name="ticketType" class="ticket-type-container" id="${eventData.eventID}"> ${categoriesOptions.join('\n')} </select>
-    <br>
-  </div>
-`;
-
-    actions.innerHTML = ticketTypeMarkup;
-
-    const quantity = document.createElement('div');
-    quantity.classList.add(...quantityClasses);
-
-    const input = document.createElement('input');
-    input.classList.add(...inputClasses) ;
-
-    input.type = 'number';
-    input.min = '0';
-    input.value = '0';
-
-    input.addEventListener('blur', () => {
-    if (!input.value) {
-      input.value = 0;
-    }
-});
-
-  input.addEventListener('input', () => {
-    const currentQuantity = parseInt(input.value);
-    if (currentQuantity > 0) {
-      addToCart.disabled = false;
-    } else {
-      addToCart.disabled = true;
-    }
-    });
-
-    quantity.appendChild (input);
-
-    const quantityActions = document.createElement ('div');
-    quantityActions.classList.add(...quantityActionsClasses);
-
-    function updateQuantity(addToCart, input) {
-      const currentQuantity = parseInt(input.value);
-      if (currentQuantity > 0) {
-        addToCart.disabled = false;
-      } else {
-        addToCart.disabled = true;
-      }
-    }
+    addLoader();
     
-    const increase = document.createElement('button');
-    increase.classList.add(...increaseBtnClasses);
-    increase.innerText = '+';
-    increase.addEventListener('click', () => {
-      input.value = parseInt(input.value) + 1;
-      updateQuantity(addToCart, input);
-    });
-    
-    const decrease = document.createElement('button');
-    decrease.classList.add(...decreaseBtnClasses);
-    decrease.innerText = '-';
-    decrease.addEventListener('click', () => {
-      const currentValue = parseInt(input.value);
-      if (currentValue > 0) {
-        input.value = currentValue - 1;
-      }
-      updateQuantity(addToCart, input);
-    });
-    
-quantityActions.appendChild(increase);
-quantityActions.appendChild(decrease);
-
-quantity.appendChild(quantityActions);
-actions.appendChild(quantity);
-eventDiv.appendChild(actions);
-
-const eventFooter = document.createElement ('footer');
-const addToCart = document.createElement ('button') ;
-addToCart.classList.add(...addToCartBtnClasses);
-addToCart.innerText = 'Add To Cart';
-addToCart.disabled = true;
-addToCart.addEventListener('click', () => {
-  const selectedTicketCategoryId = document.getElementById(eventData.eventID).value;
-  handleAddToCart(eventData.eventID, selectedTicketCategoryId, input, addToCart);
-
-});
-
-eventFooter.appendChild(addToCart);
-eventDiv.appendChild(eventFooter) ;
-
-return eventDiv;
-  }
-
-  const handleAddToCart = (eventID, selectedTicketCategoryId, input, addToCart) => {
-    const quantity = parseInt(input.value);
-    const ticketCategory = parseInt(selectedTicketCategoryId);
-    const event = parseInt(eventID);    
-    
-    if (parseInt(quantity)) {
-      fetch('http://localhost:8080/orders/post', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          eventID: +event,
-          ticketCategoryId: +ticketCategory,
-          numberOfTickets: +quantity,
-        })
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          addPurchase(data);
-          console.log("Done!");
-          input.value = 0;
-          addToCart.disabled = true;
-        })
-        .catch((error) => {
-          console.error("Error:", error);
+    const events = await fetchTicketEvents();
+    if (purchasesDiv && events.length) {
+      fetchOrders().then((orders) => {
+        setTimeout(() => {
+          removeLoader();
+        }, 200);
+  
+        orders.forEach((order) => {
+          const event = events.find((event) => event.id === order.eventId);
+          const newOrder = createOrderItem(event.ticketCategories, order);
+          purchasesContent.appendChild(newOrder);
         });
+  
+        purchasesDiv.appendChild(purchasesContent);
+      });
     } else {
-      console.error("quantity should be an integer", error);
+      removeLoader();
     }
-  };
-
-
-function renderOrdersPage() {
-  const mainContentDiv = document.querySelector('.main-content-component');
-  mainContentDiv.innerHTML = getOrdersPageTemplate();
-}
+  }
+  
 
 function renderContent(url) {
   const mainContentDiv = document.querySelector('.main-content-component');

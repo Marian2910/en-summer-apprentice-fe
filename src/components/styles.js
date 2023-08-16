@@ -67,7 +67,31 @@ const bookofStyles = {
     'focus:otline-none',
     'focus:shadow-outline'
   ],
+  purchase: [
+    'background:lightgray',
+    'padding:10px',
+    'border:1px solid gray',
+    // Add more styles as needed
+  ],
+purchaseTitle: [
+    'fontSize:18px',
+    'fontWeight:bold',
+],
+purchaseQuantity: ['width:40px',],
+purchaseQuantityWrapper: ['width:40px'],
+purchaseType:[
+    'width:150px',
+],
+purchaseTypeWrapper: [
+    'marginTop:10px',
+],
+actions: ['actions', 'flex', 'items-center', 'mt-4'],
+purchasePrice: [],
+purchaseDate: [],
   };
+
+
+
   
 export function useStyle(type) {
     if (typeof type === 'string'){
