@@ -57,8 +57,8 @@ h1 {
 }
 
 .logo {
-  height: 50px;
-  padding: 6px;
+  height: 100px;
+  width: auto;
 }
 
 .add-btn {
@@ -141,7 +141,13 @@ h1 {
 
 .description {
   font-size: 14px; 
-  color: #7e7c7c;
+  color: #7f7f7f;
+  text-align: left;
+}
+
+.location {
+  font-size: 17px; 
+  color: #333;
   text-align: left;
 }
 
@@ -222,7 +228,6 @@ h1 {
 }
 
 
-/* For the span elements */
 .flex-1 {
   flex: 1;
 }
@@ -241,4 +246,29 @@ h1 {
 
 .sm\\:w-8 {
   width: 2rem;
+}
+
+/* CSS code */
+
+/* Style for the input element */
+#filter-name {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: auto;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+/* Optional: Add hover effect */
+#filter-name:hover {
+  border-color: #aaa;
+}
+
+/* Optional: Add focus effect */
+#filter-name:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }

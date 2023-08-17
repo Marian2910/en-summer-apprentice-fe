@@ -1,10 +1,6 @@
-import { addPurchase } from "./utils";
-import { useStyle } from "./src/components/styles.js";
 import { removeLoader, addLoader } from "./src/components/loader";
 import { createEventElement } from "./src/components/createEvents";
 import { createOrderItem } from "./src/components/createOrder";
-
-
 
 function navigateTo(url) {
   history.pushState(null, null, url);
@@ -12,8 +8,15 @@ function navigateTo(url) {
 }
 function getHomePageTemplate() {
   return `
-   <div id="content" >
-      <div class="events flex items-center justify-center flex-wrap">
+    <div id="content" class="hidden centered-container">
+      <div class="w-80">
+        <h1 class="text-lg mb-4 mt-8 text-center">Exploreaza evenimente</h1>
+        <div class="filter flex flex-col items-center">
+          <input type="text" id="filter-name" placeholder="Cauta un eveniment" class="px-4 mt-4 mb-4 py-2 border text-center" />
+          <button id="filter-button" class="filter-btn px-4 py-2 text-white rounded-lg">Filtreaza</button>
+        </div>
+      </div>
+      <div class="events flex flec-col items-center justify-center">
       </div>
     </div>
   `;
@@ -23,15 +26,15 @@ function getOrdersPageTemplate() {
   return `
     <div id="content" class="hidden">
       <h1 class="text-lg mb-4 mt-8 text-center">Purchased Tickets</h1>
-      <div class="purchases ml-6 mr-6"> 
+      <div class="purchases ml-6 mr-6 text-center"> 
         <div class="bg-white px-4 py-3 gap-x-4 flex font-bold">
           <button class="flex flex-1 text-center justify-center" id="sorting-button-1"> 
             <img width="20" height="20" src="https://img.icons8.com/windows/32/sort-alpha-up.png" alt="sort-alpha-up"/>  
             <span>Name</span>
           </button>
           <span class="flex-1">Number of tickets</span>
-          <span class="flex-1">Category</span> 
-          <span class="flex-1  md:flex">Dates</span> 
+          <span class="flex-1  md:flex">Category</span> 
+          <span class="flex-1  md:flex">Date</span> 
           <button class="flex felx -1 text-center justify-center" id="sorting-button-2">
           <span>Price</span>
           <img width="20" height="20" src="https://img.icons8.com/windows/32/sorting-arrows.png" alt="sorting-arrows"/>  
@@ -42,6 +45,34 @@ function getOrdersPageTemplate() {
       </div>
     </div>
   `;
+}
+let events = [];
+
+function liveSearch(){
+  const filterInput= document.querySelector('#filter-name');
+
+  if(filterInput){
+    const searchValue = filterInput.value;
+
+    if(searchValue !== undefined){
+      const filteredEvents = events.filter((event)=>
+        event.eventName.toLowerCase().includes(searchValue.toLowerCase())
+      );
+
+      addEvents(filteredEvents)
+    }
+  }
+}
+
+function setupFilterEvents(){
+  const namefilterInput = document.querySelector('#filter-name');
+
+  if(namefilterInput){
+      const filterInterval = 500;
+      namefilterInput.addEventListener('keyup', ()=>{
+        setTimeout(liveSearch, filterInterval);
+      });
+  }
 }
 
 function setupNavigationEvents() {
@@ -76,13 +107,12 @@ function setupPopstateEvent() {
 function setupInitialPage() {
   const initialUrl = window.location.pathname;
   renderContent(initialUrl);
+  setupFilterEvents();
 }
 
 function renderHomePage() {
   const mainContentDiv = document.querySelector('.main-content-component');
   mainContentDiv.innerHTML = getHomePageTemplate();
-  // setupFilterEvents();
-  // setupSearchEvents();
   addLoader();
   fetchTicketEvents().then((data) => {
     setTimeout(()=>{
@@ -99,6 +129,7 @@ async function fetchTicketEvents() {
       throw new Error('Network response was not ok');
     }
     const data = await response.json();
+    events = data; // Update the global events variable
     return data;
   } catch (error) {
     console.error('Error fetching events:', error);
@@ -137,19 +168,16 @@ const addEvents = (events) => {
   }
 };
 
-  const createEvent = (eventData) => {
+const createEvent = (eventData) => {
     if (!eventData || !eventData.eventType) {
       console.error('Invalid eventData:', eventData.eventType);
       return null;
     }
     const eventElement = createEventElement(eventData);
     return eventElement;
-  };
+};
   
-
-  
-  
-  async function renderOrdersPage() {
+async function renderOrdersPage() {
     const mainContentDiv = document.querySelector('.main-content-component');
     mainContentDiv.innerHTML = getOrdersPageTemplate();
     const purchasesDiv = document.querySelector('.purchases');
@@ -163,20 +191,19 @@ const addEvents = (events) => {
         setTimeout(() => {
           removeLoader();
         }, 200);
+
   
         orders.forEach((order) => {
-          const event = events.find((event) => event.id === order.eventId);
+          const event = events.find((event) => event.eventName === order.eventName);
           const newOrder = createOrderItem(event.ticketCategories, order);
           purchasesContent.appendChild(newOrder);
         });
-  
         purchasesDiv.appendChild(purchasesContent);
       });
     } else {
       removeLoader();
     }
-  }
-  
+}
 
 function renderContent(url) {
   const mainContentDiv = document.querySelector('.main-content-component');

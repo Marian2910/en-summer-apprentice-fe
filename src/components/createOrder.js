@@ -4,7 +4,7 @@ export const createOrderItem = (categories, order) => {
 
     const purchase = document.createElement('div');
     purchase.id = order.orderId;
-    purchase.classList.add();
+    purchase.classList.add(...useStyle('purchase'));
 
     const purchaseTitle = createParagraph(...useStyle('purchaseTitle'));
     purchaseTitle.innerText = order.eventName;
@@ -19,18 +19,20 @@ export const createOrderItem = (categories, order) => {
     const purchaseQuantityWrapper = createDiv(...useStyle('purchaseQuantityWrapper'));
     purchaseQuantityWrapper.append(purchaseQuantity);
     purchase.appendChild(purchaseQuantityWrapper);
+    
     const purchaseType = createSelect(...useStyle('purchaseType'));
     purchaseType.setAttribute('disabled', 'true');
-    const categoriesOptions = categories.map(ticketCategory => `
-        <option class="text-sm font-bold text-black" value="${ticketCategory.ticketCategoryID}" ${ticketCategory.description === order.ticketCategory ? 'selected' : ''}>
-            ${order.ticketCategory}
-        </option>`).join('\n');
-
-    purchaseType.innerText = categoriesOptions;
-
+    const categoriesOptions = categories.map((ticketCategory) => 
+        `<option class="text-sm font-bold text-black" value="${ticketCategory.ticketCategoryID}" ${ticketCategory.description === order.ticketCategory ? 'selected' : ''}>
+            ${ticketCategory.description}
+        </option>`
+    ).join('\n');
+    
+    purchaseType.innerHTML = categoriesOptions; 
     const purchaseTypeWrapper = createDiv(...useStyle('purchaseTypeWrapper'));
-    purchaseTypeWrapper.append(purchaseType);
+    purchaseTypeWrapper.appendChild(purchaseType);
     purchase.appendChild(purchaseTypeWrapper);
+    
 
     const purchaseDate = createDiv(...useStyle('purchaseDate'));
     purchaseDate.innerText = new Date(order.orderedAt).toLocaleDateString();
@@ -42,6 +44,37 @@ export const createOrderItem = (categories, order) => {
 
 
     const actions = createDiv(...useStyle('actions'));
+
+    const editButton = createButton(
+        [...useStyle(['actionButton', 'editButton'])],
+        '<i class="fa-solid fa-pencil"></i>',
+        doNothing
+    );
+    actions.appendChild(editButton);
+  
+  const saveButton = createButton(
+    [...useStyle(['actionButton', 'hiddenButton', 'saveButton'])],
+    '<i class="fa-solid fa-check"></i>',
+    doNothing
+  );
+  actions.appendChild(saveButton);
+  
+  const cancelButton = createButton(
+    [...useStyle(['actionButton', 'hiddenButton', 'cancelButton'])],
+    '<i class="fa-solid fa-xmark"></i>',
+    doNothing
+  );
+  actions.appendChild(cancelButton);
+  
+  const deleteButton = createButton(
+    [...useStyle(['actionButton', 'deleteButton'])],
+    '<i class="fa-solid fa-trash-can"></i>',
+    doNothing
+  );
+  actions.appendChild(deleteButton);
+
+  purchase.appendChild(actions);
+  
 
     function createDiv(...classes) {
         const div = document.createElement('div');

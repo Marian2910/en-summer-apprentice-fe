@@ -1,5 +1,5 @@
 import { useStyle } from "./styles.js";
-import { removeLoader, addLoader } from "./loader";
+import { removeLoader, addLoader } from "./loader.js";
 import { addPurchase } from "../../utils.js";
 
   export function createEventElement(eventData) {
@@ -48,7 +48,7 @@ const formattedStartingHour = startingHour < 10 ? `0${startingHour}` : startingH
           <img src="./src/assets/hour_icon.png" alt="Hour Icon" class="icon">
           ${formattedDateRange}, de la ${formattedStartingHour}:00
         </p>
-        <p class="description">
+        <p class="location">
           <img src="./src/assets/location_icon.png" alt="Location Icon" class="icon">
           ${venue.location}
         </p>
