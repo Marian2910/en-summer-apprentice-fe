@@ -5,6 +5,7 @@ body {
 .events {
   justify-content: center;
   flex-wrap: wrap;
+  gap: 10px;
 }
 
 h1 {
@@ -12,25 +13,35 @@ h1 {
   font-size: 32px;
   font-weight: bold;
   margin-bottom: 12px;
-  color: #281bde;
+  color: #090909;
 }
 
 .events .event {
-  width: 300px;
-  border: 1px solid #ebf1f6;
-  box-shadow: 0 0 2px 0 rgba(145,158,171,.2), 0 12px 24px -4px rgba(145,158,171,.12);
-}
+  flex: 0 0 calc(33.33% - 20px);
+  border: 1px solid #56f3c1;
+  box-shadow: 0 0 2px 0 rgba(145, 171, 149, 0.2), 0 12px 24px -4px rgba(204, 64, 4, 0.12);
+  padding: 15px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;}
+
+.event:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 4px 0 rgba(185, 185, 21, 0.535), 0 12px 32px -4px rgba(45, 6, 113, 0.2);
+  }
 
 .event-title {
-  color: #451bde
+  color: #332732;
+  font-weight: 900;
+
 }
 
-.event img {
-  height: 150px;
-}
-
-#ticketType {
-  width: 100%;
+.event-image {
+  height: 200px;
+  width: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 10px;
+  object-fit: cover;
 }
 
 .actions {
@@ -41,27 +52,21 @@ h1 {
   margin: 12px auto;
 }
 
-#page-header {
-  background-color: #fff;
-  position: sticky;
-  top: 0;
-}
-
 .link-item {
-  color: #d64b06
+  color: #090909
 }
 
 .logo {
-  height: 50px;
-  padding: 6px;
+  height: 100px;
+  width: auto;
 }
 
 .add-btn {
-  background-color: #5f1bde;
+  background-color: #f5f052;
 }
 
 .add-to-cart-btn {
-  background: #1b3cde;
+  background: #02650f;
   margin: 22px auto;
   display: block;
   width: 100%;
@@ -71,3 +76,199 @@ h1 {
   margin-bottom: 40px;
 }
 
+.centered-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: center;
+  text-align: center; 
+  padding: 10px;
+}
+
+.event-image {
+  margin-top: 5px;
+}
+
+.ticketType {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.text-lg {
+  font:bold;
+  font:italic;
+} 
+
+.date-range {
+  font-size: 18px;
+  color: #333;
+  text-align: left;
+}
+
+.ticket-type-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 10px;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.ticket-type-select,
+.ticket-quantity-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  width: 100%;
+  vertical-align: middle;
+  border-radius: 7px;
+}
+
+
+.addToCartBtn {
+  background-color: #0b1116;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.addToCartBtn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.description {
+  font-size: 14px; 
+  color: #7f7f7f;
+  text-align: left;
+}
+
+.location {
+  font-size: 17px; 
+  color: #333;
+  text-align: left;
+}
+
+.custom-input {
+  width: 3.7rem;
+  height: 2rem; 
+}
+
+.icon {
+  display: inline;
+  vertical-align: middle;
+  width: 25px;
+  height: 25px; 
+}
+
+
+.hidden {
+  display: none;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mt-8 {
+  margin-top: 2rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* For the purchases container */
+.ml-6 {
+  margin-left: 1.5rem;
+}
+
+.mr-6 {
+  margin-right: 1.5rem;
+}
+
+/* For the flex container within purchases */
+.bg-white {
+  background-color: #ffffff;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.gap-x-4 > * + * {
+  margin-left: 1rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.font-bold {
+  font-weight: bold;
+}
+
+/* For the sorting button */
+.text-center {
+  text-align: center;
+}
+
+
+/* For the sorting icons */
+.text-xl {
+  font-size: 1.25rem;
+}
+
+
+.flex-1 {
+  flex: 1;
+}
+
+.hidden {
+  display: none;
+}
+
+.md\\:flex {
+  display: flex;
+}
+
+.w-28 {
+  width: 7rem;
+}
+
+.sm\\:w-8 {
+  width: 2rem;
+}
+
+/* CSS code */
+
+/* Style for the input element */
+#filter-name {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: auto;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+/* Optional: Add hover effect */
+#filter-name:hover {
+  border-color: #aaa;
+}
+
+/* Optional: Add focus effect */
+#filter-name:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
